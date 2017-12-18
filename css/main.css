@@ -1,0 +1,21 @@
+*{
+	padding:0px;
+	margin:0px;
+}
+html,body{
+	width:100%;
+	height:100%;
+	overflow: auto;
+
+
+}
+#chess{
+	display: block;
+
+	box-shadow: -2px -2px 2px #efefef,5px 5px 5px #efefef;
+	cursor:pointer;
+	position:absolute;
+	top:20px;
+	left:50%;
+	margin-left: -450px;
+}
