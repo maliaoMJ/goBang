@@ -1,5 +1,16 @@
-
+//获取canvas 元素
 let chess = document.getElementById('chess')
+//获取关闭按钮
+let closeBtn = document.getElementById('closeBtn')
+//获取遮罩层
+let filterBox = document.getElementById('filterBox')
+//获取提示信息
+let messageText = document.getElementById('text')
+//获取下一局按钮
+let nextBtn = document.getElementById('new')
+//获取退出按钮
+let exitBtn = document.getElementById('exit')
+//规定绘画格式2d
 let context = chess.getContext('2d')
 //判断游戏是否结束
 var over = false
@@ -10,7 +21,7 @@ const VERTICALCOUNT = 30
 // 格子大小
 const ITEMWIDTH = 30
 //黑子先行
-var black = true
+var me = true
 //赢法总和个数
 var count = 0
 //防止覆盖,存储棋盘的情况
@@ -20,6 +31,26 @@ var wins = []
 //赢法的统计数组 一维数组
 var myWin = []
 var computerWin = []
+//关闭提示界面
+closeBtn.onclick = ()=>{
+ filterBox.setAttribute('class','fadeout')
+}
+//下一局
+nextBtn.onclick = ()=>{
+  location.reload()
+}
+//退出游戏
+exitBtn.onclick =()=>{
+  window.close()
+}
+//打开提示界面 message Stirng
+function openTipMessage(message){
+  
+  messageText.innerHTML = message
+  setTimeout(()=>{
+    filterBox.setAttribute('class','openTipMessage')
+  },300)
+}
 //初始化chessBoard数组数据
 for(let i = 0 ; i < 30 ;i ++){
 	chessBoard[i] = []
@@ -114,17 +145,17 @@ function drawChessBoard(){
 	}
 }
 // 画棋子
-function drawChessPieces(x, y , black){
+function drawChessPieces(x, y , me){
 
     let gradient = context.createRadialGradient(15 + x * ITEMWIDTH + 2, 15 + y * ITEMWIDTH - 2,13,15 + x * ITEMWIDTH + 2, 15+y * ITEMWIDTH - 2,0)
-	    if(black){
+	    if(me){
 	    	// 黑棋子
 	    	gradient.addColorStop (0, '#0a0a0a')
 	        gradient.addColorStop(1, '#636766')
 	    }else{
 	    	// 白棋子
 	    	gradient.addColorStop (0, '#d1d1d1')
-	        gradient.addColorStop(1, '#f9f9f9')
+	      gradient.addColorStop(1, '#f9f9f9')
       
 	    }
 		context.beginPath()
@@ -139,7 +170,7 @@ chess.onclick= (e)=>{
    if(over){
     return 
    }
-   if(!black){
+   if(!me){
    	return
    }
    let x = Math.floor(e.offsetX / ITEMWIDTH)
@@ -147,31 +178,52 @@ chess.onclick= (e)=>{
    //判断此位置是否有棋子
    if(chessBoard[x][y]===0){
 	   	// 没有棋子,可以下
-	   	 drawChessPieces(x,y,black)
-	   	if(black){
+      //
+      //下完棋在判断
+      let promise = new Promise((resolve,reject)=>{
+           try{
+            drawChessPieces(x,y,me)
+            resolve({done:true})
+           }catch(e){
+            reject(e)
+           }
+      })
+      //      
+	
+	   	if(me){
 	   		// 下黑棋子
 	   		
 	   		chessBoard[x][y] = 1
 	   	}else{
 	   		chessBoard[x][y] = 2
 	   	}
-   	 black = !black
-   	 for(var k = 0;k < count; k++){
-   	 	if(wins[x][y][k]){
-   	 		myWin[k]++
-   	 		computerWin[k] = 47
-   	 		if(myWin[k] == 5){
-             alert('你赢啦！')
-              over = true
-   	 		}
-   	 	}
-   	 }
-   	 if(!over){
-   	 	//游戏尚未结束计算机开始落子
-   	 	computerAI()
-   	 }
+      // 异步变同步
+      promise.then((data)=>{
+        if(data.done == true){
+          me = !me
+         for(var k = 0;k < count; k++){
+          if(wins[x][y][k]){
+            myWin[k]++
+            computerWin[k] = 47
+            if(myWin[k] == 5){
+                 consle.log('你赢啦！')
+                 over = true
+                 openTipMessage('CONGRATULATION , YOU ARE WIN !')
+            }
+      }
+     }
+     if(!over){
+      //游戏尚未结束计算机开始落子
+      computerAI()
+     }
+        }
+      }).catch((error)=>{
+        console.log('下棋失败！')
+      })
+   	 
    } 
 }
+ /*--------------------------- 核心代码开始 --------------------------------*/
 function computerAI(){
 	// 人和电脑得分
  let myScore = []
@@ -201,7 +253,7 @@ function computerAI(){
         		}else if(myWin[k]==3){
                     myScore[i][j] += 2000
         		}else if(myWin[k]==4){
-        		     myScore[i][j] += 10000	
+        		       myScore[i][j] += 10000	
         		}
         		//computer
         		if(computerWin[k]==1){
@@ -239,22 +291,39 @@ function computerAI(){
  	}
 
  }
+  /*--------------------------- 核心代码结束 --------------------------------*/
  // 计算机落子
+ let computerPromise = new Promise((resolve,reject)=>{
+   try{
+    drawChessPieces(u,v,false)
+    chessBoard[u][v] =2
+    resolve({computerDone:true})
+   }catch(error){
+    reject(error)
+   }
+ })
 drawChessPieces(u,v,false)
-chessBoard[u][v] =2 
- for(var k = 0;k < count; k++){
-   	 	if(wins[u][v][k]){
-   	 		computerWin[k]++
-   	 		myWin[k] = 47
-   	 		if(computerWin[k] == 5){
+ computerPromise.then((data)=>{
+  if(data.computerDone == true){
+    for(var k = 0;k < count; k++){
+      if(wins[u][v][k]){
+        computerWin[k]++
+        myWin[k] = 47
+        if(computerWin[k] == 5){
              
               over = true
-              alert('电脑赢啦！')
-   	 		}
-   	 	}
-   	 }
-   	 if(!over){
-   	 	//游戏尚未结束计算机开始落子
-   	 	black = !black
-   	 }
+              console.log('电脑赢啦！')
+              openTipMessage('GAME OVER , SORRY  YOU LOST !')
+        }
+      }
+     }
+     if(!over){
+      //游戏尚未结束计算机开始落子
+      me = !me
+     }
+  }
+ }).catch((error)=>{
+  console.log('computer goBang is error')
+ })
+ 
 }
