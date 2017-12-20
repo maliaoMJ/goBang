@@ -14,11 +14,6 @@ let exitBtn = document.getElementById('exit')
 let context = chess.getContext('2d')
 //判断游戏是否结束
 let over = false
-//横向个数
-const HORIZONTALCOUNT = 20
-//垂直个数
-const VERTICALCOUNT = 30 
-// 格子大小
 const ITEMWIDTH = 30
 //黑子先行
 let me = true
@@ -31,6 +26,11 @@ let wins = []
 //赢法的统计数组 一维数组
 let myWin = []
 let computerWin = []
+//横向个数
+const HORIZONTALCOUNT = 20
+//垂直个数
+const VERTICALCOUNT = 30 
+// 格子大小
 //关闭提示界面
 closeBtn.onclick = ()=>{
  filterBox.setAttribute('class','fadeout')
