@@ -13,7 +13,7 @@ let exitBtn = document.getElementById('exit')
 //规定绘画格式2d
 let context = chess.getContext('2d')
 //判断游戏是否结束
-var over = false
+let over = false
 //横向个数
 const HORIZONTALCOUNT = 20
 //垂直个数
@@ -21,16 +21,16 @@ const VERTICALCOUNT = 30
 // 格子大小
 const ITEMWIDTH = 30
 //黑子先行
-var me = true
+let me = true
 //赢法总和个数
-var count = 0
+let count = 0
 //防止覆盖,存储棋盘的情况
-var chessBoard = [] //二维数组
+let chessBoard = [] //二维数组
 //赢法数组 三维数组
-var wins = [] 
+let wins = [] 
 //赢法的统计数组 一维数组
-var myWin = []
-var computerWin = []
+let myWin = []
+let computerWin = []
 //关闭提示界面
 closeBtn.onclick = ()=>{
  filterBox.setAttribute('class','fadeout')
@@ -201,7 +201,7 @@ chess.onclick= (e)=>{
       promise.then((data)=>{
         if(data.done == true){
           me = !me
-         for(var k = 0;k < count; k++){
+         for(let k = 0;k < count; k++){
           if(wins[x][y][k]){
             myWin[k]++
             computerWin[k] = 47
@@ -229,8 +229,8 @@ function computerAI(){
  let myScore = []
  let computerScore= []
  let max =0
- var u = 0
- var v = 0
+ let u = 0
+ let v = 0
  // 初始化
  for(let i= 0;i<VERTICALCOUNT;i++){
  	myScore[i] = []
@@ -305,7 +305,7 @@ function computerAI(){
 drawChessPieces(u,v,false)
  computerPromise.then((data)=>{
   if(data.computerDone == true){
-    for(var k = 0;k < count; k++){
+    for(let k = 0;k < count; k++){
       if(wins[u][v][k]){
         computerWin[k]++
         myWin[k] = 47
